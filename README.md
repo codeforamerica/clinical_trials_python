@@ -32,7 +32,7 @@ ZIP file format.
     >>> # If you want plain XML returned back.
     ... t.search(sponsor='NHLBI', output_format=None)
 
-    >>> zip_file = Trials().download('cancer', count=500)
+    >>> zip_file = t.download('cancer', count=500)
 
 
 Copyright
