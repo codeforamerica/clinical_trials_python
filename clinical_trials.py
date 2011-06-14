@@ -24,6 +24,7 @@ class Trials(API):
             'intervention': 'intr', 'interventions': 'intr',
             'outcome': 'outc', 'outcomes': 'outc',
             'sponsor': 'spons', 'sponsors': 'spons',
+            'country': 'cntry', 'state': 'state1',
             'recruiting': 'recr'
         }
 
@@ -33,17 +34,26 @@ class Trials(API):
 
         >>> Trials().search('pediatric')
         """
+        if search_term:
+            kwargs.update({search_type: search_term})
+        kwargs = self._correct_keywords(**kwargs)
+        return self.call_api('search', **kwargs)
+
+    def _correct_keywords(self, **kwargs):
+        """Internal method to loop through and correct keyword arguments."""
         search_types_dict = self.search_types_dict
         for key in kwargs:
-            if key in search_types_dict:
+            if key == 'state':
+                state_abbrev = kwargs.pop('state')
+                kwargs['state1'] = 'NA:US:' + state_abbrev
+            elif key == 'country':
+                country_abbrev = kwargs.pop('country')
+                kwargs['cntry1'] = 'NA:' + country_abbrev
+            elif key in search_types_dict:
                 correct_name = search_types_dict[key]
                 data = kwargs.pop(key)
                 kwargs.update({correct_name: data})
-        if search_type in search_types_dict:
-            search_type = search_types_dict[search_type]
-        if search_term:
-            kwargs.update({search_type: search_term})
-        return self.call_api('search', **kwargs)
+        return kwargs
 
     def download(self, search_term=None, search_type='term', **kwargs):
         """
