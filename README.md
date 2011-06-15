@@ -32,7 +32,14 @@ ZIP file format.
     >>> # If you want plain XML returned back.
     ... t.search(sponsor='NHLBI', output_format=None)
 
-    >>> zip_file = t.download('cancer', count=500)
+    >>> # You can also find trials by location -- up to 3 states or countries.
+    ... t.search('cancer', state='TX')
+
+    >>> t.search('diabetes', state1='TX', state2='NY', state3='CA')
+    >>> t.search(condition='lyme disease', country1='US', country2='CA')
+
+    >>> # And you can download a ZIP file with the data.
+    ... zip_file = t.download('cancer', count=500)
 
 
 Copyright
