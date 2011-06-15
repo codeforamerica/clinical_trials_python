@@ -31,6 +31,10 @@ class TestSearchMethod(unittest.TestCase):
                         'search?term=test&displayxml=true')
         api.urlopen.assert_called_with(expected_url)
 
+    def test_search_method_with_no_output_formatting(self):
+        Trials().search('test', output_format=None)
+        self.assertFalse(api.xml2dict.called)
+
     def test_search_method_with_spaces(self):
         Trials().search('foo bar')
         expected_url = ('http://clinicaltrials.gov/'
