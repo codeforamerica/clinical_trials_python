@@ -13,7 +13,7 @@ from api import API
 
 
 class Trials(API):
-    """Python wrapper for the Clical Trials API."""
+    """Python wrapper for the Clinical Trials API."""
 
     def __init__(self):
         super(Trials, self).__init__()
