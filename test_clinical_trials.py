@@ -82,18 +82,25 @@ class TestSearchMethod(unittest.TestCase):
                         'count=200&displayxml=true&cond=alzheimer%27s+disease')
         api.urlopen.assert_called_with(expected_url)
 
-    def test_search_method_with_state_arg(self):
+    def test_search_method_with_state_kwarg(self):
         Trials().search('cancer', state='TX')
         expected_url = ('http://clinicaltrials.gov/'
                         'search?state1=NA%3AUS%3ATX'
                         '&displayxml=true&term=cancer')
         api.urlopen.assert_called_with(expected_url)
 
-    def test_search_method_with_country_arg(self):
+    def test_search_method_with_country_kwarg(self):
         Trials().search(condition='diabetes', country='CA')
         expected_url = ('http://clinicaltrials.gov/'
                         'search?cntry1=NA%3ACA'
                         '&displayxml=true&cond=diabetes')
+        api.urlopen.assert_called_with(expected_url)
+
+    def test_search_method_with_multiple_country_kwargs(self):
+        Trials().search(country='US', country2='CA')
+        expected_url = ('http://clinicaltrials.gov/'
+                        'search?cntry1=NA%3AUS'
+                        '&cntry2=NA%3ACA&displayxml=true')
         api.urlopen.assert_called_with(expected_url)
 
 

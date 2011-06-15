@@ -6,6 +6,7 @@ Python wrapper for the Clincal Trials API.
 Clinical Trials Documentation:  http://clinicaltrials.gov/ct2/info/linking
 """
 
+import re
 from urllib import quote
 
 from api import API
@@ -24,9 +25,13 @@ class Trials(API):
             'intervention': 'intr', 'interventions': 'intr',
             'outcome': 'outc', 'outcomes': 'outc',
             'sponsor': 'spons', 'sponsors': 'spons',
-            'country': 'cntry', 'state': 'state1',
+            'country': 'cntry1', 'state': 'state1',
             'recruiting': 'recr'
         }
+        # Save compiled regular expressions.
+        self._re_state = re.compile('state.*')
+        self._re_country = re.compile('(country|cntry).*')
+        self._re_country_num = re.compile('country(.+)')
 
     def search(self, search_term=None, search_type='term', **kwargs):
         """
@@ -43,16 +48,25 @@ class Trials(API):
         """Internal method to loop through and correct keyword arguments."""
         search_types_dict = self.search_types_dict
         for key in kwargs:
-            if key == 'state':
-                state_abbrev = kwargs.pop('state')
-                kwargs['state1'] = 'NA:US:' + state_abbrev
-            elif key == 'country':
-                country_abbrev = kwargs.pop('country')
-                kwargs['cntry1'] = 'NA:' + country_abbrev
-            elif key in search_types_dict:
+            if self._re_state.match(key):
+                state_abbrev = kwargs[key]
+                kwargs[key] = 'NA:US:' + state_abbrev
+            elif self._re_country.match(key):
+                country_abbrev = kwargs[key]
+                if len(country_abbrev) == 2:
+                    # We haven't seen it before.
+                    kwargs[key] = 'NA:' + country_abbrev
+            if key in search_types_dict:
+                # We need to go from human readable to the
+                # correct search_type parameter name.
                 correct_name = search_types_dict[key]
                 data = kwargs.pop(key)
                 kwargs.update({correct_name: data})
+            elif self._re_country_num.match(key):
+                # Then someone put in a keyword like `country3`.
+                country_abbrev = kwargs.pop(key)
+                formatted_key = self._re_country_num.sub(r'cntry\1', key)
+                kwargs.update({formatted_key: country_abbrev})
         return kwargs
 
     def download(self, search_term=None, search_type='term', **kwargs):
