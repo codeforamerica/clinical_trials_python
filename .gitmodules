@@ -1,0 +1,3 @@
+[submodule "Python-API-Module"]
+	path = Python-API-Module
+	url = git@github.com:codeforamerica/Python-API-Module.git
