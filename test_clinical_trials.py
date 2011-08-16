@@ -6,7 +6,7 @@ import unittest
 
 from mock import Mock
 
-from api import api
+from clinical_trials.api import api
 from clinical_trials import Trials
 
 
